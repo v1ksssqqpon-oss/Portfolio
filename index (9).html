@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ropzt — Telegram Bot Developer & Automation Expert</title>
+  <meta name="description" content="Mikhail (ropzt) — Telegram Bot Developer, Mini Apps & Automation. Building powerful bots, mini apps and automated systems for your business." />
+  <meta name="keywords" content="telegram bot developer, telegram mini apps, automation, python, aiogram, ropzt" />
+  <meta property="og:title" content="ropzt — Telegram Developer" />
+  <meta property="og:description" content="Building powerful Telegram bots, mini apps & automation systems" />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ==================== CSS VARIABLES ==================== */
+    :root {
+      --bg: #050509;
+      --bg2: #07070f;
+      --surface: rgba(255,255,255,0.03);
+      --surface2: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(120,80,255,0.25);
+      --text: #f0eeff;
+      --text2: #9992bb;
+      --text3: #6b6488;
+      --accent: #7c4dff;
+      --accent2: #3d5afe;
+      --accent3: #00e5ff;
+      --glow: rgba(124,77,255,0.35);
+      --glow2: rgba(61,90,254,0.25);
+      --glow3: rgba(0,229,255,0.15);
+      --gradient: linear-gradient(135deg, #7c4dff 0%, #3d5afe 50%, #00e5ff 100%);
+      --gradient2: linear-gradient(135deg, #7c4dff 0%, #3d5afe 100%);
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius: 16px;
+      --radius2: 24px;
+      --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ==================== RESET & BASE ==================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      cursor: none;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    button { font-family: var(--font-body); cursor: none; border: none; background: none; }
+    ::selection { background: rgba(124,77,255,0.35); color: #fff; }
+
+    /* ==================== CUSTOM CURSOR ==================== */
+    #cursor {
+      width: 12px; height: 12px;
+      background: var(--accent3);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, background 0.3s ease;
+      mix-blend-mode: screen;
+    }
+    #cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid rgba(124,77,255,0.6);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.18s ease, width 0.3s ease, height 0.3s ease, border-color 0.3s ease;
+    }
+    body.cursor-hover #cursor { width: 20px; height: 20px; background: var(--accent); }
+    body.cursor-hover #cursor-ring { width: 56px; height: 56px; border-color: rgba(124,77,255,0.9); }
+
+    /* ==================== NOISE OVERLAY ==================== */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 1; opacity: 0.6;
+    }
+
+    /* ==================== ANIMATED BG ==================== */
+    #bg-canvas { position: fixed; inset: 0; z-index: 0; opacity: 0.6; }
+    .orb {
+      position: fixed; border-radius: 50%; filter: blur(100px);
+      pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite;
+    }
+    .orb1 { width: 600px; height: 600px; background: rgba(124,77,255,0.12); top: -200px; left: -200px; animation-delay: 0s; }
+    .orb2 { width: 500px; height: 500px; background: rgba(61,90,254,0.1); bottom: -150px; right: -150px; animation-delay: -7s; }
+    .orb3 { width: 350px; height: 350px; background: rgba(0,229,255,0.07); top: 40%; left: 50%; animation-delay: -14s; }
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -40px) scale(1.05); }
+      66% { transform: translate(-20px, 20px) scale(0.95); }
+    }
+
+    /* ==================== LAYOUT ==================== */
+    .container { max-width: 1180px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; }
+    section { position: relative; z-index: 2; }
+
+    /* ==================== NAVBAR ==================== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 20px 0;
+      transition: var(--transition);
+    }
+    nav.scrolled {
+      background: rgba(5,5,9,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 22px; font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; letter-spacing: -0.5px;
+    }
+    .nav-links { display: flex; align-items: center; gap: 36px; }
+    .nav-links a {
+      font-size: 14px; font-weight: 500; color: var(--text2);
+      transition: color var(--transition); letter-spacing: 0.3px;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .lang-toggle {
+      font-family: var(--font-mono); font-size: 12px; font-weight: 500;
+      color: var(--text3); border: 1px solid var(--border);
+      padding: 6px 12px; border-radius: 8px; cursor: none;
+      transition: var(--transition); background: var(--surface);
+    }
+    .lang-toggle:hover { color: var(--accent); border-color: var(--border2); }
+    .nav-cta {
+      padding: 9px 20px; border-radius: 10px;
+      background: var(--gradient2); color: #fff;
+      font-size: 14px; font-weight: 600; letter-spacing: 0.2px;
+      transition: var(--transition); position: relative; overflow: hidden;
+    }
+    .nav-cta::after {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(255,255,255,0.1);
+      transform: translateX(-100%); transition: transform 0.4s ease;
+    }
+    .nav-cta:hover::after { transform: translateX(0); }
+    .nav-cta:hover { box-shadow: 0 0 24px var(--glow); transform: translateY(-1px); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: none; }
+    .hamburger span { width: 22px; height: 2px; background: var(--text2); border-radius: 2px; transition: var(--transition); }
+
+    /* ==================== HERO ==================== */
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      text-align: center; padding: 120px 24px 80px;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--border2); border-radius: 100px;
+      padding: 6px 16px 6px 8px; margin-bottom: 32px;
+      background: rgba(124,77,255,0.08); backdrop-filter: blur(10px);
+      animation: fadeUp 0.8s ease both 0.2s;
+    }
+    .hero-badge-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #4cff91; box-shadow: 0 0 8px #4cff91;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .hero-badge span { font-size: 13px; font-weight: 500; color: var(--text2); font-family: var(--font-mono); }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(52px, 8vw, 100px);
+      font-weight: 800; line-height: 0.95;
+      letter-spacing: -3px; margin-bottom: 24px;
+      animation: fadeUp 0.9s ease both 0.4s;
+    }
+    .hero-title .line1 { display: block; color: var(--text); }
+    .hero-title .grad {
+      background: var(--gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 20px); color: var(--text2); font-weight: 300;
+      max-width: 560px; line-height: 1.6; margin: 0 auto 40px;
+      animation: fadeUp 1s ease both 0.6s;
+    }
+    .hero-ctas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; animation: fadeUp 1s ease both 0.8s; }
+    .btn-primary {
+      padding: 14px 32px; border-radius: 12px;
+      background: var(--gradient2); color: #fff;
+      font-size: 15px; font-weight: 600; letter-spacing: 0.2px;
+      transition: var(--transition); position: relative; overflow: hidden;
+      box-shadow: 0 0 30px var(--glow2);
+    }
+    .btn-primary::before {
+      content: ''; position: absolute; top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s ease;
+    }
+    .btn-primary:hover::before { left: 100%; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 40px var(--glow); }
+    .btn-ghost {
+      padding: 14px 32px; border-radius: 12px;
+      border: 1px solid var(--border2); color: var(--text);
+      font-size: 15px; font-weight: 500;
+      background: var(--surface); backdrop-filter: blur(10px);
+      transition: var(--transition);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: rgba(124,77,255,0.08); transform: translateY(-2px); }
+    .hero-stats {
+      display: flex; gap: 40px; justify-content: center; flex-wrap: wrap;
+      margin-top: 64px; animation: fadeUp 1s ease both 1s;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: var(--font-display); font-size: 36px; font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; letter-spacing: -1px;
+    }
+    .stat-label { font-size: 13px; color: var(--text3); margin-top: 4px; font-weight: 400; letter-spacing: 0.5px; }
+    .hero-scroll {
+      position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      animation: fadeUp 1s ease both 1.2s;
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+    .scroll-text { font-size: 11px; font-family: var(--font-mono); color: var(--text3); letter-spacing: 2px; text-transform: uppercase; }
+
+    /* ==================== SECTION SHARED ==================== */
+    .section-label {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: var(--font-mono); font-size: 12px;
+      color: var(--accent); text-transform: uppercase; letter-spacing: 3px;
+      margin-bottom: 16px;
+    }
+    .section-label::before {
+      content: ''; width: 24px; height: 1px; background: var(--accent);
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 5vw, 54px);
+      font-weight: 800; letter-spacing: -1.5px; line-height: 1.05;
+      margin-bottom: 16px;
+    }
+    .section-title .grad {
+      background: var(--gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .section-desc { color: var(--text2); font-size: 17px; max-width: 540px; line-height: 1.65; font-weight: 300; }
+
+    /* ==================== ABOUT ==================== */
+    .about { padding: 120px 0; }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .about-avatar-wrap {
+      position: relative; display: flex; justify-content: center;
+    }
+    .about-avatar-bg {
+      width: 300px; height: 300px; border-radius: 50%;
+      background: var(--gradient2); opacity: 0.15; filter: blur(60px);
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    }
+    .about-avatar {
+      width: 280px; height: 280px; border-radius: 28px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      font-family: var(--font-display); font-size: 100px; font-weight: 800;
+      background: linear-gradient(135deg, #0d0d1a 0%, #14103a 100%);
+    }
+    .about-avatar::before {
+      content: '';
+      position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px;
+      border-radius: 28px;
+      background: var(--gradient2);
+      z-index: -1;
+    }
+    .avatar-initials {
+      background: var(--gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; font-size: 80px;
+    }
+    .about-tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .tag {
+      font-family: var(--font-mono); font-size: 12px;
+      padding: 5px 12px; border-radius: 8px;
+      border: 1px solid var(--border); color: var(--text3);
+      background: var(--surface); transition: var(--transition);
+    }
+    .tag:hover { border-color: var(--border2); color: var(--accent); background: rgba(124,77,255,0.06); }
+    .tag.accent { border-color: var(--border2); color: var(--accent); background: rgba(124,77,255,0.1); }
+    .about-text { font-size: 17px; color: var(--text2); line-height: 1.7; margin: 24px 0; font-weight: 300; }
+    .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 24px; }
+    .skill-item {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; color: var(--text2);
+    }
+    .skill-item::before { content: '▸'; color: var(--accent); font-size: 12px; }
+
+    /* ==================== SERVICES ==================== */
+    .services { padding: 120px 0; }
+    .services-header { text-align: center; margin-bottom: 64px; }
+    .services-header .section-label { justify-content: center; }
+    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .service-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      padding: 32px;
+      background: var(--surface);
+      backdrop-filter: blur(10px);
+      transition: var(--transition);
+      position: relative; overflow: hidden;
+      cursor: none;
+    }
+    .service-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: var(--gradient2); transform: scaleX(0); transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .service-card:hover { border-color: var(--border2); background: rgba(255,255,255,0.045); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 40px var(--glow2); }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: rgba(124,77,255,0.12);
+      border: 1px solid rgba(124,77,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; margin-bottom: 20px;
+      transition: var(--transition);
+    }
+    .service-card:hover .service-icon { background: rgba(124,77,255,0.2); transform: scale(1.05); }
+    .service-name { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.3px; }
+    .service-desc { font-size: 15px; color: var(--text2); line-height: 1.6; font-weight: 300; }
+    .service-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 20px; }
+    .service-tag { font-size: 11px; font-family: var(--font-mono); padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--text3); }
+
+    /* ==================== WHY ME ==================== */
+    .whyme { padding: 120px 0; }
+    .whyme-header { text-align: center; margin-bottom: 64px; }
+    .whyme-header .section-label { justify-content: center; }
+    .whyme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .whyme-card {
+      border: 1px solid var(--border); border-radius: var(--radius2);
+      padding: 36px 32px; background: var(--surface);
+      backdrop-filter: blur(10px); transition: var(--transition);
+      position: relative; overflow: hidden; cursor: default;
+    }
+    .whyme-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--gradient2); transform: scaleX(0); transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .whyme-card:hover { border-color: var(--border2); background: rgba(255,255,255,0.045); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 40px var(--glow2); }
+    .whyme-card:hover::before { transform: scaleX(1); }
+    .whyme-icon {
+      font-size: 36px; margin-bottom: 20px; display: block;
+      transition: transform 0.4s ease;
+    }
+    .whyme-card:hover .whyme-icon { transform: scale(1.15) rotate(-5deg); }
+    .whyme-title { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.3px; }
+    .whyme-desc { font-size: 15px; color: var(--text2); line-height: 1.65; font-weight: 300; }
+
+    /* ==================== PROCESS ==================== */
+    .process { padding: 120px 0; }
+    .process-header { text-align: center; margin-bottom: 72px; }
+    .process-header .section-label { justify-content: center; }
+    .process-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; position: relative; }
+    .process-steps::before {
+      content: ''; position: absolute; top: 32px; left: 12.5%; right: 12.5%;
+      height: 1px; background: linear-gradient(90deg, transparent, var(--border2), var(--accent), var(--border2), transparent);
+      z-index: 0;
+    }
+    .step { text-align: center; padding: 0 16px; position: relative; z-index: 1; }
+    .step-num {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--bg2); border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      font-family: var(--font-display); font-size: 20px; font-weight: 800;
+      color: var(--accent); transition: var(--transition);
+    }
+    .step:hover .step-num { background: rgba(124,77,255,0.15); box-shadow: 0 0 30px var(--glow); transform: scale(1.1); }
+    .step-title { font-family: var(--font-display); font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+    .step-desc { font-size: 14px; color: var(--text2); line-height: 1.6; font-weight: 300; }
+
+    /* ==================== PRICING ==================== */
+    .pricing { padding: 120px 0; }
+    .pricing-header { text-align: center; margin-bottom: 64px; }
+    .pricing-header .section-label { justify-content: center; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: start; }
+    .price-card {
+      border: 1px solid var(--border); border-radius: var(--radius2);
+      padding: 36px; background: var(--surface);
+      backdrop-filter: blur(10px); transition: var(--transition); cursor: none;
+      position: relative; overflow: hidden;
+    }
+    .price-card.popular {
+      border-color: var(--border2);
+      background: rgba(124,77,255,0.06);
+    }
+    .price-card.popular::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top, rgba(124,77,255,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .price-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .price-card.popular:hover { box-shadow: 0 20px 80px var(--glow2); }
+    .popular-badge {
+      display: inline-flex; padding: 5px 14px; border-radius: 100px;
+      background: var(--gradient2); color: #fff; font-size: 12px; font-weight: 600;
+      margin-bottom: 20px; letter-spacing: 0.5px;
+    }
+    .price-tier { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .price-amount {
+      font-family: var(--font-display); font-size: 48px; font-weight: 800;
+      letter-spacing: -2px; margin-bottom: 4px;
+      background: var(--gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .price-note { font-size: 14px; color: var(--text3); margin-bottom: 28px; }
+    .price-features { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+    .price-features li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--text2); }
+    .price-features li::before { content: '✓'; color: var(--accent3); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .price-features li.no { color: var(--text3); }
+    .price-features li.no::before { content: '–'; color: var(--text3); }
+    .price-btn {
+      width: 100%; padding: 13px; border-radius: 12px; font-size: 15px; font-weight: 600;
+      transition: var(--transition); text-align: center; display: block;
+    }
+    .price-btn.outline { border: 1px solid var(--border2); color: var(--text); }
+    .price-btn.outline:hover { border-color: var(--accent); background: rgba(124,77,255,0.08); }
+    .price-btn.filled { background: var(--gradient2); color: #fff; box-shadow: 0 4px 24px var(--glow2); }
+    .price-btn.filled:hover { transform: translateY(-2px); box-shadow: 0 8px 40px var(--glow); }
+
+    /* ==================== TESTIMONIALS ==================== */
+    .testimonials { padding: 120px 0; }
+    .testimonials-header { text-align: center; margin-bottom: 64px; }
+    .testimonials-header .section-label { justify-content: center; }
+    .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .testi-card {
+      border: 1px solid var(--border); border-radius: var(--radius2);
+      padding: 28px; background: var(--surface);
+      backdrop-filter: blur(10px); transition: var(--transition);
+    }
+    .testi-card:hover { border-color: var(--border2); transform: translateY(-3px); box-shadow: 0 16px 50px rgba(0,0,0,0.3); }
+    .testi-stars { font-size: 16px; margin-bottom: 14px; }
+    .testi-text { font-size: 15px; color: var(--text2); line-height: 1.65; font-weight: 300; font-style: italic; margin-bottom: 20px; }
+    .testi-author { display: flex; align-items: center; gap: 12px; }
+    .testi-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--gradient2); display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 14px; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .testi-name { font-weight: 600; font-size: 14px; }
+    .testi-role { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+    /* ==================== FAQ ==================== */
+    .faq { padding: 120px 0; }
+    .faq-inner { display: grid; grid-template-columns: 1fr 1.5fr; gap: 80px; align-items: start; }
+    .faq-list { display: flex; flex-direction: column; gap: 12px; }
+    .faq-item {
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--surface); overflow: hidden; transition: var(--transition);
+    }
+    .faq-item.open { border-color: var(--border2); }
+    .faq-q {
+      padding: 20px 24px; font-size: 15px; font-weight: 500;
+      display: flex; justify-content: space-between; align-items: center;
+      cursor: none; gap: 12px;
+    }
+    .faq-q:hover { color: var(--accent); }
+    .faq-icon { flex-shrink: 0; transition: transform 0.3s ease; color: var(--accent); font-size: 18px; }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    .faq-a { padding: 0 24px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease; }
+    .faq-item.open .faq-a { max-height: 200px; padding-bottom: 20px; }
+    .faq-a p { font-size: 14px; color: var(--text2); line-height: 1.65; font-weight: 300; }
+
+    /* ==================== CONTACT ==================== */
+    .contact { padding: 120px 0 80px; }
+    .contact-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+    .contact-links { display: flex; flex-direction: column; gap: 12px; margin-top: 32px; }
+    .contact-link {
+      display: flex; align-items: center; gap: 14px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px 20px; background: var(--surface);
+      transition: var(--transition); cursor: none;
+    }
+    .contact-link:hover { border-color: var(--border2); background: rgba(124,77,255,0.06); transform: translateX(4px); }
+    .contact-link-icon { font-size: 20px; }
+    .contact-link-text { font-size: 15px; font-weight: 500; }
+    .contact-link-sub { font-size: 13px; color: var(--text3); margin-top: 2px; }
+    .contact-form { display: flex; flex-direction: column; gap: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+    .form-label { font-size: 13px; color: var(--text2); font-weight: 500; letter-spacing: 0.3px; }
+    .form-input, .form-textarea {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 16px;
+      font-family: var(--font-body); font-size: 15px; color: var(--text);
+      transition: var(--transition); outline: none; width: 100%;
+    }
+    .form-input:focus, .form-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,77,255,0.12); background: rgba(255,255,255,0.05); }
+    .form-input::placeholder, .form-textarea::placeholder { color: var(--text3); }
+    .form-textarea { resize: vertical; min-height: 120px; }
+    .form-submit {
+      padding: 15px 32px; border-radius: 12px;
+      background: var(--gradient2); color: #fff;
+      font-size: 15px; font-weight: 600; cursor: none;
+      transition: var(--transition); position: relative; overflow: hidden;
+      box-shadow: 0 4px 24px var(--glow2);
+    }
+    .form-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 40px var(--glow); }
+    .form-success {
+      display: none; padding: 16px; border-radius: 12px;
+      background: rgba(76,255,145,0.08); border: 1px solid rgba(76,255,145,0.2);
+      color: #4cff91; font-size: 14px; text-align: center;
+    }
+
+    /* ==================== FOOTER ==================== */
+    footer {
+      border-top: 1px solid var(--border); padding: 32px 0;
+      position: relative; z-index: 2;
+    }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .footer-logo { font-family: var(--font-display); font-size: 18px; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .footer-text { font-size: 13px; color: var(--text3); }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { font-size: 13px; color: var(--text3); transition: color var(--transition); }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ==================== ANIMATIONS ==================== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .reveal {
+      opacity: 0; transform: translateY(40px);
+      transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1); }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+    .reveal-right { opacity: 0; transform: translateX(40px); transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1); }
+    .reveal-right.visible { opacity: 1; transform: translateX(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+    .reveal-delay-6 { transition-delay: 0.6s; }
+
+    /* ==================== MOBILE NAV ==================== */
+    .mobile-menu {
+      display: none; position: fixed; inset: 0; z-index: 99;
+      background: rgba(5,5,9,0.97); backdrop-filter: blur(20px);
+      flex-direction: column; align-items: center; justify-content: center; gap: 32px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-family: var(--font-display); font-size: 36px; font-weight: 700; color: var(--text2); transition: color var(--transition); }
+    .mobile-menu a:hover { color: var(--accent); }
+    .mobile-menu-close { position: absolute; top: 24px; right: 24px; font-size: 28px; color: var(--text2); cursor: none; }
+
+    /* ==================== GLOW DIVIDER ==================== */
+    .glow-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border2), transparent); margin: 0; }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 900px) {
+      .about-grid { grid-template-columns: 1fr; gap: 48px; }
+      .about-avatar-wrap { display: none; }
+      .services-grid { grid-template-columns: 1fr 1fr; }
+      .whyme-grid { grid-template-columns: 1fr 1fr; }
+      .process-steps { grid-template-columns: 1fr 1fr; }
+      .process-steps::before { display: none; }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
+      .testi-grid { grid-template-columns: 1fr 1fr; }
+      .faq-inner { grid-template-columns: 1fr; gap: 40px; }
+      .contact-inner { grid-template-columns: 1fr; gap: 48px; }
+    }
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .hero-title { letter-spacing: -2px; }
+      .services-grid { grid-template-columns: 1fr; }
+      .whyme-grid { grid-template-columns: 1fr; }
+      .process-steps { grid-template-columns: 1fr; }
+      .testi-grid { grid-template-columns: 1fr; }
+      .hero-stats { gap: 24px; }
+      .stat-num { font-size: 28px; }
+      .skills-grid { grid-template-columns: 1fr; }
+      #cursor, #cursor-ring { display: none; }
+      body { cursor: auto; }
+      button { cursor: pointer; }
+      a { cursor: pointer; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Cursor -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- Background -->
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <span class="mobile-menu-close" id="menuClose">✕</span>
+    <a href="#about" onclick="closeMobileMenu()" data-en="About" data-ru="Обо мне">About</a>
+    <a href="#services" onclick="closeMobileMenu()" data-en="Services" data-ru="Услуги">Services</a>
+    <a href="#whyme" onclick="closeMobileMenu()" data-en="Why Me" data-ru="Почему я">Why Me</a>
+    <a href="#pricing" onclick="closeMobileMenu()" data-en="Pricing" data-ru="Цены">Pricing</a>
+    <a href="#contact" onclick="closeMobileMenu()" data-en="Contact" data-ru="Контакт">Contact</a>
+  </div>
+
+  <!-- Navbar -->
+  <nav id="navbar">
+    <div class="container nav-inner">
+      <div class="nav-logo">ropzt</div>
+      <div class="nav-links">
+        <a href="#about" data-en="About" data-ru="Обо мне">About</a>
+        <a href="#services" data-en="Services" data-ru="Услуги">Services</a>
+        <a href="#whyme" data-en="Why Me" data-ru="Почему я">Why Me</a>
+        <a href="#process" data-en="Process" data-ru="Процесс">Process</a>
+        <a href="#pricing" data-en="Pricing" data-ru="Цены">Pricing</a>
+        <a href="#faq" data-en="FAQ" data-ru="FAQ">FAQ</a>
+      </div>
+      <div class="nav-right">
+        <button class="lang-toggle" id="langBtn">RU</button>
+        <a href="#contact" class="nav-cta" data-en="Let's talk" data-ru="Написать">Let's talk</a>
+        <div class="hamburger" id="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      <span data-en="Available for new projects" data-ru="Открыт для новых проектов">Available for new projects</span>
+    </div>
+    <h1 class="hero-title">
+      <span class="line1" data-en="Mikhail" data-ru="Михаил">Mikhail</span>
+      <span class="grad" data-en="Telegram Dev" data-ru="Telegram Dev">Telegram Dev</span>
+    </h1>
+    <p class="hero-sub" data-en="I build powerful Telegram bots, Mini Apps and automation systems that scale your business and save hundreds of hours." data-ru="Создаю мощных Telegram-ботов, Mini Apps и системы автоматизации, которые масштабируют бизнес и экономят сотни часов.">
+      I build powerful Telegram bots, Mini Apps and automation systems that scale your business and save hundreds of hours.
+    </p>
+    <div class="hero-ctas">
+      <a href="#contact" class="btn-primary" data-en="🚀 Start a project" data-ru="🚀 Начать проект">🚀 Start a project</a>
+      <a href="#whyme" class="btn-ghost" data-en="Why choose me" data-ru="Почему я">Why choose me</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">40+</div><div class="stat-label" data-en="Projects done" data-ru="Проектов">Projects done</div></div>
+      <div class="stat"><div class="stat-num">98%</div><div class="stat-label" data-en="Client satisfaction" data-ru="Довольных клиентов">Client satisfaction</div></div>
+      <div class="stat"><div class="stat-num">3yr</div><div class="stat-label" data-en="Experience" data-ru="Опыта">Experience</div></div>
+      <div class="stat"><div class="stat-num">24h</div><div class="stat-label" data-en="Response time" data-ru="Ответ в течение">Response time</div></div>
+    </div>
+    <div class="hero-scroll">
+      <span class="scroll-text" data-en="scroll" data-ru="листай">scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <div class="glow-divider"></div>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-avatar-wrap reveal-left">
+          <div class="about-avatar-bg"></div>
+          <div class="about-avatar">
+            <span class="avatar-initials">M</span>
+          </div>
+        </div>
+        <div class="reveal-right">
+          <div class="section-label" data-en="About me" data-ru="Обо мне">About me</div>
+          <h2 class="section-title" data-en="Hi, I'm <span class='grad'>Mikhail</span>" data-ru="Привет, я <span class='grad'>Михаил</span>">Hi, I'm <span class="grad">Mikhail</span></h2>
+          <div class="about-tag-row">
+            <span class="tag accent">@ropzt</span>
+            <span class="tag">Python</span>
+            <span class="tag">Telegram Dev</span>
+            <span class="tag">Automation</span>
+          </div>
+          <p class="about-text" data-en="I'm a freelance developer specializing in Telegram ecosystem — bots, Mini Apps, automation and AI integrations. I transform complex business processes into elegant, scalable Telegram solutions that actually work." data-ru="Я фриланс-разработчик, специализирующийся на экосистеме Telegram — боты, Mini Apps, автоматизация и AI-интеграции. Превращаю сложные бизнес-процессы в элегантные, масштабируемые Telegram-решения, которые реально работают.">
+            I'm a freelance developer specializing in Telegram ecosystem — bots, Mini Apps, automation and AI integrations. I transform complex business processes into elegant, scalable Telegram solutions that actually work.
+          </p>
+          <div class="skills-grid">
+            <div class="skill-item">Python / aiogram</div>
+            <div class="skill-item">React / TypeScript</div>
+            <div class="skill-item">Node.js / FastAPI</div>
+            <div class="skill-item">PostgreSQL / Redis</div>
+            <div class="skill-item">Docker / Linux</div>
+            <div class="skill-item">OpenAI API</div>
+            <div class="skill-item">Telegram Bot API</div>
+            <div class="skill-item">TON / Web3</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="glow-divider"></div>
+
+  <!-- SERVICES -->
+  <section class="services" id="services">
+    <div class="container">
+      <div class="services-header">
+        <div class="section-label reveal" data-en="What I do" data-ru="Что я делаю">What I do</div>
+        <h2 class="section-title reveal" data-en="My <span class='grad'>Services</span>" data-ru="Мои <span class='grad'>Услуги</span>">My <span class="grad">Services</span></h2>
+        <p class="section-desc reveal" style="margin: 0 auto;" data-en="End-to-end development of everything Telegram — from simple bots to complex automated ecosystems." data-ru="Разработка всего под Telegram — от простых ботов до сложных автоматизированных экосистем.">End-to-end development of everything Telegram — from simple bots to complex automated ecosystems.</p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card reveal reveal-delay-1">
+          <div class="service-icon">🤖</div>
+          <div class="service-name" data-en="Telegram Bots" data-ru="Telegram Боты">Telegram Bots</div>
+          <div class="service-desc" data-en="Custom bots of any complexity — from simple FAQ bots to full-featured business automation with payments, CRM sync and analytics." data-ru="Боты любой сложности — от простых FAQ до полноценной автоматизации бизнеса с оплатой, CRM и аналитикой.">Custom bots of any complexity — from simple FAQ bots to full-featured business automation with payments, CRM sync and analytics.</div>
+          <div class="service-tags"><span>aiogram</span><span>Python</span><span>PostgreSQL</span></div>
+        </div>
+        <div class="service-card reveal reveal-delay-2">
+          <div class="service-icon">📱</div>
+          <div class="service-name" data-en="Telegram Mini Apps" data-ru="Telegram Mini Apps">Telegram Mini Apps</div>
+          <div class="service-desc" data-en="Full web apps inside Telegram — shops, dashboards, games, subscription tools, loyalty programs with beautiful UI." data-ru="Полноценные веб-приложения внутри Telegram — магазины, дашборды, игры, подписки с красивым UI.">Full web apps inside Telegram — shops, dashboards, games, subscription tools, loyalty programs with beautiful UI.</div>
+          <div class="service-tags"><span>React</span><span>TypeScript</span><span>TG WebApp API</span></div>
+        </div>
+        <div class="service-card reveal reveal-delay-3">
+          <div class="service-icon">⚡</div>
+          <div class="service-name" data-en="Automation" data-ru="Автоматизация">Automation</div>
+          <div class="service-desc" data-en="Workflow automation, data pipelines, scheduled jobs — eliminate repetitive tasks and let systems work for you 24/7." data-ru="Автоматизация рабочих процессов, конвейеры данных, планировщики задач — системы работают за вас 24/7.">Workflow automation, data pipelines, scheduled jobs — eliminate repetitive tasks and let systems work for you 24/7.</div>
+          <div class="service-tags"><span>Python</span><span>Celery</span><span>Redis</span></div>
+        </div>
+        <div class="service-card reveal reveal-delay-1">
+          <div class="service-icon">🔍</div>
+          <div class="service-name" data-en="Parsers & Scrapers" data-ru="Парсеры">Parsers & Scrapers</div>
+          <div class="service-desc" data-en="Intelligent data collection from any website or API, with automatic processing, storage and delivery to your Telegram." data-ru="Умный сбор данных с любого сайта или API, с автоматической обработкой, хранением и доставкой в Telegram.">Intelligent data collection from any website or API, with automatic processing, storage and delivery to your Telegram.</div>
+          <div class="service-tags"><span>Playwright</span><span>BeautifulSoup</span><span>FastAPI</span></div>
+        </div>
+        <div class="service-card reveal reveal-delay-2">
+          <div class="service-icon">🧠</div>
+          <div class="service-name" data-en="AI Integrations" data-ru="AI-интеграции">AI Integrations</div>
+          <div class="service-desc" data-en="GPT-powered bots, AI assistants, content generation, image processing and smart automation using latest AI models." data-ru="Боты на GPT, AI-ассистенты, генерация контента, обработка изображений и умная автоматизация.">GPT-powered bots, AI assistants, content generation, image processing and smart automation using latest AI models.</div>
+          <div class="service-tags"><span>OpenAI</span><span>LangChain</span><span>Whisper</span></div>
+        </div>
+        <div class="service-card reveal reveal-delay-3">
+          <div class="service-icon">🖥️</div>
+          <div class="service-name" data-en="Admin Panels" data-ru="Админ-панели">Admin Panels</div>
+          <div class="service-desc" data-en="Custom admin dashboards for managing your bot — users, content, statistics, broadcast, moderation, all in one place." data-ru="Кастомные административные панели для управления ботом — пользователи, контент, статистика, рассылки.">Custom admin dashboards for managing your bot — users, content, statistics, broadcast, moderation, all in one place.</div>
+          <div class="service-tags"><span>React</span><span>FastAPI</span><span>Charts</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="glow-divider"></div>
+
+  <!-- WHY ME -->
+  <section class="whyme" id="whyme">
+    <div class="container">
+      <div class="whyme-header">
+        <div class="section-label reveal" data-en="Why me" data-ru="Почему я">Why me</div>
+        <h2 class="section-title reveal" data-en="Why Choose <span class='grad'>Me</span>" data-ru="Почему выбирают <span class='grad'>Меня</span>">Why Choose <span class="grad">Me</span></h2>
+        <p class="section-desc reveal" style="margin: 0 auto;" data-en="I don't just write code — I solve your business problems. Here's what sets me apart." data-ru="Я не просто пишу код — я решаю бизнес-задачи. Вот что меня отличает.">I don't just write code — I solve your business problems. Here's what sets me apart.</p>
+      </div>
+      <div class="whyme-grid">
+        <div class="whyme-card reveal reveal-delay-1">
+          <div class="whyme-icon">⚡</div>
+          <div class="whyme-title" data-en="Fast Delivery" data-ru="Быстрая сдача">Fast Delivery</div>
+          <div class="whyme-desc" data-en="Most projects delivered in 5–14 days. No endless delays — I set realistic deadlines and always hit them." data-ru="Большинство проектов сдаю за 5–14 дней. Никаких бесконечных задержек — ставлю реальные сроки и всегда соблюдаю их.">Most projects delivered in 5–14 days. No endless delays — I set realistic deadlines and always hit them.</div>
+        </div>
+        <div class="whyme-card reveal reveal-delay-2">
+          <div class="whyme-icon">🔒</div>
+          <div class="whyme-title" data-en="Fixed Price" data-ru="Фиксированная цена">Fixed Price</div>
+          <div class="whyme-desc" data-en="You always know what you pay. I quote upfront — no surprise invoices, no scope creep billing." data-ru="Вы всегда знаете, сколько платите. Называю цену сразу — никаких неожиданных счётов и скрытых платежей.">You always know what you pay. I quote upfront — no surprise invoices, no scope creep billing.</div>
+        </div>
+        <div class="whyme-card reveal reveal-delay-3">
+          <div class="whyme-icon">💬</div>
+          <div class="whyme-title" data-en="Always in Touch" data-ru="Всегда на связи">Always in Touch</div>
+          <div class="whyme-desc" data-en="I respond within 24 hours, share progress updates and keep you informed at every stage via Telegram." data-ru="Отвечаю в течение 24 часов, делюсь обновлениями прогресса и держу вас в курсе на каждом этапе через Telegram.">I respond within 24 hours, share progress updates and keep you informed at every stage via Telegram.</div>
+        </div>
+        <div class="whyme-card reveal reveal-delay-1">
+          <div class="whyme-icon">🧠</div>
+          <div class="whyme-title" data-en="Deep Expertise" data-ru="Глубокая экспертиза">Deep Expertise</div>
+          <div class="whyme-desc" data-en="3+ years building Telegram products. I know the platform's limits, quirks and best practices inside out." data-ru="3+ года разработки Telegram-продуктов. Знаю платформу изнутри: ограничения, нюансы и лучшие практики.">3+ years building Telegram products. I know the platform's limits, quirks and best practices inside out.</div>
+        </div>
+        <div class="whyme-card reveal reveal-delay-2">
+          <div class="whyme-icon">🛠️</div>
+          <div class="whyme-title" data-en="Clean Code & Docs" data-ru="Чистый код и документация">Clean Code & Docs</div>
+          <div class="whyme-desc" data-en="Every project comes with readable code, deployment instructions and documentation — so you're never locked in." data-ru="Каждый проект поставляется с читаемым кодом, инструкцией по деплою и документацией — никакой зависимости от меня.">Every project comes with readable code, deployment instructions and documentation — so you're never locked in.</div>
+        </div>
+        <div class="whyme-card reveal reveal-delay-3">
+          <div class="whyme-icon">🎯</div>
+          <div class="whyme-title" data-en="Result-Oriented" data-ru="Ориентация на результат">Result-Oriented</div>
+          <div class="whyme-desc" data-en="I ask the right questions before writing a single line of code. Your goals drive every technical decision I make." data-ru="Задаю правильные вопросы до написания первой строки кода. Ваши цели определяют каждое техническое решение.">I ask the right questions before writing a single line of code. Your goals drive every technical decision I make.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="glow-divider"></div>
+
+  <!-- PROCESS -->
+  <section class="process" id="process">
+    <div class="container">
+      <div class="process-header">
+        <div class="section-label reveal" data-en="How it works" data-ru="Как это работает">How it works</div>
+        <h2 class="section-title reveal" data-en="My Work <span class='grad'>Process</span>" data-ru="Мой <span class='grad'>Процесс</span>">My Work <span class="grad">Process</span></h2>
+        <p class="section-desc reveal" style="margin: 0 auto;" data-en="Clear, transparent workflow from idea to launch." data-ru="Чёткий и прозрачный процесс от идеи до запуска.">Clear, transparent workflow from idea to launch.</p>
+      </div>
+      <div class="process-steps">
+        <div class="step reveal reveal-delay-1">
+          <div class="step-num">01</div>
+          <div class="step-title" data-en="Discovery" data-ru="Анализ">Discovery</div>
+          <div class="step-desc" data-en="We discuss your goals, requirements and tech stack. I ask the right questions to scope the project accurately." data-ru="Обсуждаем цели, требования и стек. Задаю правильные вопросы для точного скоупа проекта.">We discuss your goals, requirements and tech stack. I ask the right questions to scope the project accurately.</div>
+        </div>
+        <div class="step reveal reveal-delay-2">
+          <div class="step-num">02</div>
+          <div class="step-title" data-en="Proposal" data-ru="Предложение">Proposal</div>
+          <div class="step-desc" data-en="You receive a detailed proposal with architecture, timeline, tech stack and fixed price. No surprises later." data-ru="Получаете подробное предложение с архитектурой, сроками, стеком и фиксированной ценой. Без сюрпризов.">You receive a detailed proposal with architecture, timeline, tech stack and fixed price. No surprises later.</div>
+        </div>
+        <div class="step reveal reveal-delay-3">
+          <div class="step-num">03</div>
+          <div class="step-title" data-en="Development" data-ru="Разработка">Development</div>
+          <div class="step-desc" data-en="Iterative development with regular demos. You stay in the loop via Telegram — see progress in real time." data-ru="Итеративная разработка с регулярными демо. Держу в курсе через Telegram — прогресс в реальном времени.">Iterative development with regular demos. You stay in the loop via Telegram — see progress in real time.</div>
+        </div>
+        <div class="step reveal reveal-delay-4">
+          <div class="step-num">04</div>
+          <div class="step-title" data-en="Delivery & Support" data-ru="Сдача и поддержка">Delivery & Support</div>
+          <div class="step-desc" data-en="Deploy + full handoff with docs. Free bug-fix support period. Long-term support options available." data-ru="Деплой + полная сдача с документацией. Бесплатная поддержка после сдачи. Доступна долгосрочная поддержка.">Deploy + full handoff with docs. Free bug-fix support period. Long-term support options available.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="glow-divider"></div>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <div class="pricing-header">
+        <div class="section-label reveal" data-en="Pricing" data-ru="Тарифы">Pricing</div>
+        <h2 class="section-title reveal" data-en="Simple <span class='grad'>Pricing</span>" data-ru="Прозрачные <span class='grad'>Цены</span>">Simple <span class="grad">Pricing</span></h2>
+        <p class="section-desc reveal" style="margin: 0 auto;" data-en="Fixed prices, no hidden fees. Complex projects discussed individually." data-ru="Фиксированные цены, без скрытых платежей. Сложные проекты обсуждаются индивидуально.">Fixed prices, no hidden fees. Complex projects discussed individually.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="price-card reveal reveal-delay-1">
+          <div class="price-tier" data-en="Starter" data-ru="Старт">Starter</div>
+          <div class="price-amount">$100</div>
+          <div class="price-note" data-en="Starting from · 5–7 days" data-ru="От · 5–7 дней">Starting from · 5–7 days</div>
+          <ul class="price-features">
+            <li data-en="Simple Telegram bot" data-ru="Простой Telegram бот">Simple Telegram bot</li>
+            <li data-en="Up to 10 commands/handlers" data-ru="До 10 команд/хэндлеров">Up to 10 commands/handlers</li>
+            <li data-en="SQLite/PostgreSQL DB" data-ru="SQLite/PostgreSQL база данных">SQLite/PostgreSQL DB</li>
+            <li data-en="Basic admin panel" data-ru="Базовая админка">Basic admin panel</li>
+            <li data-en="1 month support" data-ru="1 месяц поддержки">1 month support</li>
+            <li class="no" data-en="Mini App UI" data-ru="Mini App UI">Mini App UI</li>
+            <li class="no" data-en="AI integrations" data-ru="AI-интеграции">AI integrations</li>
+          </ul>
+          <a href="#contact" class="price-btn outline" data-en="Get started" data-ru="Начать">Get started</a>
+        </div>
+        <div class="price-card popular reveal reveal-delay-2">
+          <div class="popular-badge" data-en="✦ Most Popular" data-ru="✦ Популярный">✦ Most Popular</div>
+          <div class="price-tier" data-en="Professional" data-ru="Профессиональный">Professional</div>
+          <div class="price-amount">$300</div>
+          <div class="price-note" data-en="Starting from · 10–14 days" data-ru="От · 10–14 дней">Starting from · 10–14 days</div>
+          <ul class="price-features">
+            <li data-en="Complex bot or Mini App" data-ru="Сложный бот или Mini App">Complex bot or Mini App</li>
+            <li data-en="Full PostgreSQL + Redis" data-ru="Полный PostgreSQL + Redis">Full PostgreSQL + Redis</li>
+            <li data-en="Payment integrations" data-ru="Интеграции оплаты">Payment integrations</li>
+            <li data-en="Beautiful admin panel" data-ru="Красивая админ-панель">Beautiful admin panel</li>
+            <li data-en="API integrations" data-ru="API-интеграции">API integrations</li>
+            <li data-en="3 months support" data-ru="3 месяца поддержки">3 months support</li>
+            <li data-en="Docker deployment" data-ru="Docker деплой">Docker deployment</li>
+          </ul>
+          <a href="#contact" class="price-btn filled" data-en="Get started" data-ru="Начать">Get started</a>
+        </div>
+        <div class="price-card reveal reveal-delay-3">
+          <div class="price-tier" data-en="Enterprise" data-ru="Корпоративный">Enterprise</div>
+          <div class="price-amount" style="font-size: 36px;" data-en="Custom" data-ru="Договорная">Custom</div>
+          <div class="price-note" data-en="Let's discuss · Any timeline" data-ru="Обсудим · Любые сроки">Let's discuss · Any timeline</div>
+          <ul class="price-features">
+            <li data-en="Full ecosystem development" data-ru="Разработка полной экосистемы">Full ecosystem development</li>
+            <li data-en="AI integrations (GPT-4, etc.)" data-ru="AI-интеграции (GPT-4 и др.)">AI integrations (GPT-4, etc.)</li>
+            <li data-en="High-load architecture" data-ru="Высоконагруженная архитектура">High-load architecture</li>
+            <li data-en="Custom Mini App" data-ru="Кастомный Mini App">Custom Mini App</li>
+            <li data-en="TON / Web3 integration" data-ru="TON / Web3 интеграция">TON / Web3 integration</li>
+            <li data-en="Ongoing support plan" data-ru="Долгосрочная поддержка">Ongoing support plan</li>
+            <li data-en="Full documentation" data-ru="Полная документация">Full documentation</li>
+          </ul>
+          <a href="#contact" class="price-btn outline" data-en="Let's talk" data-ru="Обсудить">Let's talk</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="glow-divider"></div>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials" id="testimonials">
+    <div class="container">
+      <div class="testimonials-header">
+        <div class="section-label reveal" data-en="Reviews" data-ru="Отзывы">Reviews</div>
+        <h2 class="section-title reveal" data-en="Client <span class='grad'>Testimonials</span>" data-ru="Отзывы <span class='grad'>Клиентов</span>">Client <span class="grad">Testimonials</span></h2>
+      </div>
+      <div class="testi-grid">
+        <div class="testi-card reveal reveal-delay-1">
+          <div class="testi-stars">⭐⭐⭐⭐⭐</div>
+          <div class="testi-text" data-en='"Mikhail built our entire Telegram shop from scratch in 10 days. The bot handles hundreds of orders daily without any issues. Absolutely professional."' data-ru='"Михаил построил наш Telegram-магазин с нуля за 10 дней. Бот обрабатывает сотни заказов ежедневно без проблем. Абсолютный профессионал."'>"Mikhail built our entire Telegram shop from scratch in 10 days. The bot handles hundreds of orders daily without any issues. Absolutely professional."</div>
+          <div class="testi-author">
+            <div class="testi-avatar">A</div>
+            <div><div class="testi-name">Alex K.</div><div class="testi-role" data-en="E-commerce owner" data-ru="Владелец интернет-магазина">E-commerce owner</div></div>
+          </div>
+        </div>
+        <div class="testi-card reveal reveal-delay-2">
+          <div class="testi-stars">⭐⭐⭐⭐⭐</div>
+          <div class="testi-text" data-en='"The AI support bot reduced our customer service workload by 70%. It handles FAQs perfectly and routes complex questions to our team."' data-ru='"AI-бот поддержки снизил нагрузку на нашу клиентскую службу на 70%. Отлично обрабатывает FAQ и маршрутизирует сложные вопросы команде."'>"The AI support bot reduced our customer service workload by 70%. It handles FAQs perfectly and routes complex questions to our team."</div>
+          <div class="testi-author">
+            <div class="testi-avatar">S</div>
+            <div><div class="testi-name">Sara M.</div><div class="testi-role" data-en="SaaS Founder" data-ru="Основатель SaaS">SaaS Founder</div></div>
+          </div>
+        </div>
+        <div class="testi-card reveal reveal-delay-3">
+          <div class="testi-stars">⭐⭐⭐⭐⭐</div>
+          <div class="testi-text" data-en='"Fast delivery, clean code, clear communication. The Mini App for our loyalty program looks better than we imagined. Already hired for the next project."' data-ru='"Быстрая сдача, чистый код, чёткое общение. Mini App для программы лояльности выглядит лучше, чем мы представляли. Уже нанял на следующий проект."'>"Fast delivery, clean code, clear communication. The Mini App for our loyalty program looks better than we imagined. Already hired for the next project."</div>
+          <div class="testi-author">
+            <div class="testi-avatar">D</div>
+            <div><div class="testi-name">Denis R.</div><div class="testi-role" data-en="Marketing agency" data-ru="Маркетинговое агентство">Marketing agency</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="glow-divider"></div>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <div class="faq-inner">
+        <div class="reveal-left">
+          <div class="section-label" data-en="FAQ" data-ru="Вопросы">FAQ</div>
+          <h2 class="section-title" data-en="Common <span class='grad'>Questions</span>" data-ru="Частые <span class='grad'>Вопросы</span>">Common <span class="grad">Questions</span></h2>
+          <p class="section-desc" data-en="Didn't find your answer? Write to me directly." data-ru="Не нашли ответ? Напишите мне напрямую.">Didn't find your answer? Write to me directly.</p>
+          <a href="https://t.me/ropzt" style="display:inline-flex;align-items:center;gap:8px;margin-top:24px;padding:12px 24px;border-radius:12px;background:rgba(124,77,255,0.12);border:1px solid var(--border2);color:var(--accent);font-size:14px;font-weight:500;transition:var(--transition);" target="_blank">
+            💬 @ropzt
+          </a>
+        </div>
+        <div class="faq-list reveal-right">
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+              <span data-en="How long does development take?" data-ru="Сколько времени занимает разработка?">How long does development take?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a"><p data-en="Depends on complexity. A basic bot: 3–5 days. A full Mini App with backend: 10–14 days. An enterprise ecosystem: 3–6 weeks. I always give realistic estimates before starting." data-ru="Зависит от сложности. Базовый бот: 3–5 дней. Полноценный Mini App с бекендом: 10–14 дней. Корпоративная экосистема: 3–6 недель. Всегда даю реалистичные оценки до начала работы.">Depends on complexity. A basic bot: 3–5 days. A full Mini App with backend: 10–14 days. An enterprise ecosystem: 3–6 weeks. I always give realistic estimates before starting.</p></div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+              <span data-en="Do you provide hosting/deployment?" data-ru="Предоставляете хостинг/деплой?">Do you provide hosting/deployment?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a"><p data-en="Yes. I deploy to your server (VPS/VDS) or can recommend and set up a suitable server. Everything is Dockerized for easy management and scaling." data-ru="Да. Деплою на ваш сервер (VPS/VDS) или могу порекомендовать и настроить подходящий. Всё докеризировано для лёгкого управления и масштабирования.">Yes. I deploy to your server (VPS/VDS) or can recommend and set up a suitable server. Everything is Dockerized for easy management and scaling.</p></div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+              <span data-en="What is the payment structure?" data-ru="Как устроена оплата?">What is the payment structure?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a"><p data-en="Typically 50% upfront, 50% on delivery. For large projects we can split into 3 milestones. I accept crypto (USDT, TON, BTC) and bank transfer." data-ru="Обычно 50% предоплата, 50% по сдаче. Для крупных проектов можем разбить на 3 этапа. Принимаю крипту (USDT, TON, BTC) и банковский перевод.">Typically 50% upfront, 50% on delivery. For large projects we can split into 3 milestones. I accept crypto (USDT, TON, BTC) and bank transfer.</p></div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+              <span data-en="Will I own the source code?" data-ru="Буду ли я владеть исходным кодом?">Will I own the source code?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a"><p data-en="Absolutely. After final payment, all source code, documentation and access credentials are fully transferred to you. No licensing restrictions." data-ru="Абсолютно. После финальной оплаты весь исходный код, документация и учётные данные полностью передаются вам. Никаких лицензионных ограничений.">Absolutely. After final payment, all source code, documentation and access credentials are fully transferred to you. No licensing restrictions.</p></div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+              <span data-en="Do you offer ongoing support?" data-ru="Предлагаете постоянную поддержку?">Do you offer ongoing support?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a"><p data-en="Yes. All packages include a free support period (bugs only). Extended monthly support retainers are available for updates, new features and monitoring." data-ru="Да. Все пакеты включают бесплатный период поддержки (только баги). Доступны ежемесячные ретейнеры для обновлений, новых фичей и мониторинга.">Yes. All packages include a free support period (bugs only). Extended monthly support retainers are available for updates, new features and monitoring.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="glow-divider"></div>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="container">
+      <div class="contact-inner">
+        <div class="reveal-left">
+          <div class="section-label" data-en="Get in touch" data-ru="Связаться">Get in touch</div>
+          <h2 class="section-title" data-en="Let's Build <span class='grad'>Together</span>" data-ru="Давайте создадим <span class='grad'>вместе</span>">Let's Build <span class="grad">Together</span></h2>
+          <p class="section-desc" data-en="Have a project in mind? Tell me about it. I respond within 24 hours." data-ru="Есть идея проекта? Расскажите мне о ней. Отвечаю в течение 24 часов.">Have a project in mind? Tell me about it. I respond within 24 hours.</p>
+          <div class="contact-links">
+            <a href="https://t.me/ropzt" class="contact-link" target="_blank">
+              <span class="contact-link-icon">✈️</span>
+              <div>
+                <div class="contact-link-text">@ropzt</div>
+                <div class="contact-link-sub">Telegram — fastest response</div>
+              </div>
+            </a>
+            <a href="mailto:v1ksssqqpon@gmail.com" class="contact-link">
+              <span class="contact-link-icon">📧</span>
+              <div>
+                <div class="contact-link-text">v1ksssqpon@gmail.com</div>
+                <div class="contact-link-sub" data-en="Email" data-ru="Почта">Email</div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="reveal-right">
+          <div class="contact-form" id="contactForm">
+            <div class="form-group">
+              <label class="form-label" data-en="Your name" data-ru="Ваше имя">Your name</label>
+              <input type="text" class="form-input" id="formName" placeholder="Mikhail" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Telegram / Email</label>
+              <input type="text" class="form-input" id="formContact" placeholder="@username" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-en="Project description" data-ru="Описание проекта">Project description</label>
+              <textarea class="form-textarea" id="formMessage" placeholder="I need a Telegram bot for..."></textarea>
+            </div>
+            <button class="form-submit" onclick="handleSubmit()" data-en="🚀 Send message" data-ru="🚀 Отправить">🚀 Send message</button>
+            <div class="form-success" id="formSuccess" data-en="✓ Message sent! I'll reply within 24 hours." data-ru="✓ Сообщение отправлено! Отвечу в течение 24 часов.">✓ Message sent! I'll reply within 24 hours.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo">ropzt</div>
+        <div class="footer-text" data-en="© 2025 Mikhail · ropzt. All rights reserved." data-ru="© 2025 Михаил · ropzt. Все права защищены.">© 2025 Mikhail · ropzt. All rights reserved.</div>
+        <div class="footer-links">
+          <a href="https://t.me/ropzt" target="_blank">Telegram</a>
+          <a href="#whyme" data-en="Why Me" data-ru="Почему я">Why Me</a>
+          <a href="#contact" data-en="Contact" data-ru="Контакт">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ==================== CURSOR ====================
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    function animateCursor() {
+      cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+    document.querySelectorAll('a, button, .service-card, .project-card, .price-card, .faq-q, .contact-link, .testi-card').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+    });
+
+    // ==================== NAVBAR SCROLL ====================
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // ==================== REVEAL ON SCROLL ====================
+    const reveals = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(el => observer.observe(el));
+
+    // ==================== FAQ ====================
+    function toggleFaq(el) {
+      const item = el.parentElement;
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    }
+
+    // ==================== HAMBURGER ====================
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuClose = document.getElementById('menuClose');
+    hamburger.addEventListener('click', () => mobileMenu.classList.add('open'));
+    menuClose.addEventListener('click', () => mobileMenu.classList.remove('open'));
+    function closeMobileMenu() { mobileMenu.classList.remove('open'); }
+
+    // ==================== LANGUAGE TOGGLE ====================
+    const langBtn = document.getElementById('langBtn');
+    let lang = 'en';
+    langBtn.addEventListener('click', () => {
+      lang = lang === 'en' ? 'ru' : 'en';
+      langBtn.textContent = lang === 'en' ? 'RU' : 'EN';
+      document.documentElement.setAttribute('data-lang', lang);
+      document.querySelectorAll('[data-en][data-ru]').forEach(el => {
+        const txt = el.getAttribute('data-' + lang);
+        if (txt) el.innerHTML = txt;
+      });
+      // Placeholders
+      if (lang === 'ru') {
+        document.getElementById('formName').placeholder = 'Михаил';
+        document.querySelector('.form-textarea').placeholder = 'Мне нужен Telegram бот для...';
+      } else {
+        document.getElementById('formName').placeholder = 'Mikhail';
+        document.querySelector('.form-textarea').placeholder = 'I need a Telegram bot for...';
+      }
+    });
+
+    // ==================== FORM ====================
+    function handleSubmit() {
+      const name = document.getElementById('formName').value.trim();
+      const contact = document.getElementById('formContact').value.trim();
+      const msg = document.getElementById('formMessage').value.trim();
+      if (!name || !contact || !msg) {
+        alert(lang === 'ru' ? 'Пожалуйста, заполните все поля' : 'Please fill in all fields');
+        return;
+      }
+      const tgText = encodeURIComponent(`New project inquiry!\n\nName: ${name}\nContact: ${contact}\n\nMessage: ${msg}`);
+      window.open(`https://t.me/ropzt?text=${tgText}`, '_blank');
+      document.getElementById('formSuccess').style.display = 'block';
+      document.getElementById('formName').value = '';
+      document.getElementById('formContact').value = '';
+      document.getElementById('formMessage').value = '';
+    }
+
+    // ==================== SMOOTH SCROLL OFFSET ====================
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // ==================== STAT COUNTER ANIMATION ====================
+    function animateCounters() {
+      document.querySelectorAll('.stat-num').forEach(el => {
+        const text = el.textContent;
+        const num = parseFloat(text);
+        if (!isNaN(num)) {
+          let start = 0;
+          const duration = 1500;
+          const step = (timestamp) => {
+            if (!start) start = timestamp;
+            const progress = Math.min((timestamp - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            el.textContent = Math.floor(eased * num) + text.replace(/[\d.]/g, '');
+            if (progress < 1) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        }
+      });
+    }
+    const heroObserver = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { animateCounters(); heroObserver.disconnect(); }
+    }, { threshold: 0.5 });
+    heroObserver.observe(document.querySelector('.hero-stats'));
+  </script>
+</body>
+</html>
